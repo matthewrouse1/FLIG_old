@@ -1,6 +1,6 @@
 ﻿using Autofac;
 
-namespace FLIGCommon
+namespace FLIGServer
 {
     public static class Container
     {

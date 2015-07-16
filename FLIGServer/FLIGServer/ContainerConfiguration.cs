@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Autofac.Integration.Wcf;
-using FLIGServer.Implementations;
-using FLIGServer.Interfaces;
+using FLIGCommon.Modules;
+using FLIGServer.Modules;
 
 namespace FLIGServer
 {
@@ -15,12 +10,15 @@ namespace FLIGServer
         public IContainer Create()
         {
             var builder = new ContainerBuilder();
-            builder.RegisterType<DataAccess>().As<IDataAccess>().InstancePerLifetimeScope();
+            builder.RegisterModule<UserDetailsModule>();
+            builder.RegisterModule<SettingsProviderModule>();
+            builder.RegisterModule<FLIGServiceModule>();
 
-            var container = builder.Build();
-            //AutofacHostFactory.Container = container;
+            IContainer rootContainer = builder.Build();
+            //AutofacHostFactory.Container = rootContainer;
+            Container.Instance = rootContainer;
 
-            return container;
+            return rootContainer;
         }
     }
 }

@@ -43,9 +43,11 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -53,8 +55,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Container.cs" />
-    <Compile Include="ContainerConfiguration.cs" />
+    <Compile Include="Forms\UserDetailsInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UserDetailsInput.Designer.cs">
+      <DependentUpon>UserDetailsInput.cs</DependentUpon>
+    </Compile>
     <Compile Include="Implementations\SettingsProvider.cs" />
     <Compile Include="Interfaces\ISettingsProvider.cs" />
     <Compile Include="Interfaces\IUserDetails.cs" />
@@ -75,6 +81,11 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\UserDetailsInput.resx">
+      <DependentUpon>UserDetailsInput.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

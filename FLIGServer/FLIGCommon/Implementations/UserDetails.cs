@@ -2,30 +2,19 @@
 using Autofac;
 using System.Security;
 using System.Security.Cryptography;
+using System;
 
 namespace FLIGCommon.Implementations
 {
     public class UserDetails : IUserDetails
     {
         private ISettingsProvider settings;
+        private readonly IContainer Container;
 
-        private byte[] GetBytes(string str)
+        public UserDetails(IContainer container)
         {
-            byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }
-
-        private string GetString(byte[] bytes)
-        {
-            char[] chars = new char[bytes.Length / sizeof(char)];
-            System.Buffer.BlockCopy(bytes, 0, chars, 0, bytes.Length);
-            return new string(chars);
-        }
-
-        public UserDetails()
-        {
-            this.settings = Container.Instance.Resolve<ISettingsProvider>();
+            this.Container = container;
+            this.settings = Container.Resolve<ISettingsProvider>();
         }
 
         public bool IsUserSetup()
@@ -77,20 +66,20 @@ namespace FLIGCommon.Implementations
         private byte[] NewEntropy()
         {
             var Entropy = new byte[16];
-            settings.Set("Entropy", this.GetString(Entropy));
+            settings.Set("Entropy", Convert.ToBase64String(Entropy));
             return Entropy;
         }
 
         private byte[] CheckEntropy()
         {
             var entropy = new byte[16];
-            if (!string.IsNullOrEmpty(settings.Get("Entropy")))
+            if (string.IsNullOrEmpty(settings.Get("Entropy")))
             {
                 entropy = this.NewEntropy();
             }
             else
             {
-                entropy = this.GetBytes(settings.Get("Entropy"));
+                entropy = Convert.FromBase64String(settings.Get("Entropy"));
             }
 
             return entropy;
@@ -98,9 +87,9 @@ namespace FLIGCommon.Implementations
 
         public SecureString GetPassword()
         {
-            var secure = new SecureString();
             var entropy = this.CheckEntropy();
-            foreach (var c in this.GetString(ProtectedData.Unprotect(this.GetBytes(settings.Get("Password")), entropy, DataProtectionScope.CurrentUser)).ToCharArray())
+            var secure = new SecureString();
+            foreach (var c in Convert.ToBase64String(ProtectedData.Unprotect(Convert.FromBase64String(settings.Get("Password")), entropy, DataProtectionScope.CurrentUser)))
             {
                 secure.AppendChar(c);
             }
@@ -110,7 +99,7 @@ namespace FLIGCommon.Implementations
         public void SetPassword(string Value)
         {
             var entropy = this.CheckEntropy();
-            settings.Set("Password", this.GetString(ProtectedData.Protect(this.GetBytes(Value), entropy, DataProtectionScope.CurrentUser)));
+            settings.Set("Password", Convert.ToBase64String(ProtectedData.Protect(Convert.FromBase64String(Value), entropy, DataProtectionScope.CurrentUser)));
         }
         #endregion
 

@@ -10,29 +10,12 @@ namespace FLIGServer
     {
         static void Main(string[] args)
         {
-            var secure = new SecureString();
-            foreach (var c in "welcome4".ToCharArray())
-            {
-                secure.AppendChar(c);
-            }
-            Console.WriteLine(secure);
-            IntPtr unmanagedString = IntPtr.Zero;
-            try
-            {
-                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(secureString);
-                Console.WriteLine(Marshal.PtrToStringUni(unmanagedString));
-            }
-            finally
-            {
-                Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
-            }
-
             HostFactory.Run(c =>
             {
                 c.Service<ServiceHostContainer>(s =>
                 {
                     s.ConstructUsing(name => new ServiceHostContainer());
-                    s.WhenStarted((service, control) => service.Start());
+                    s.WhenStarted((service, control) => service.Start(args));
                     s.WhenStopped((service, control) => service.Stop());
                 });
 
